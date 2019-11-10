@@ -79,6 +79,7 @@
 /* Lots of globals, but mostly for the status UI and other things where it
    really makes no sense to haul them around as function parameters. */
 
+static u64 inputs_generated = 0;
 
 EXP_ST u8 *in_dir,                    /* Input directory with test cases  */
           *out_file,                  /* File to fuzz, if any             */
@@ -2264,7 +2265,12 @@ EXP_ST void init_forkserver(char** argv) {
 /* Execute target application, monitoring for timeouts. Return status
    information. The called program will update trace_bits[]. */
 
+static void link_or_copy(u8*, u8*);
 static u8 run_target(char** argv, u32 timeout) {
+  u8* pointer_to_filename = alloc_printf("%s/me/%020llu", out_dir, inputs_generated);
+  link_or_copy(out_file, pointer_to_filename);
+  ck_free(pointer_to_filename);
+  inputs_generated++;
 
   static struct itimerval it;
   static u32 prev_timed_out = 0;
@@ -7218,6 +7224,10 @@ EXP_ST void setup_dirs_fds(void) {
 #endif /* !__sun */
 
   }
+
+  tmp = alloc_printf("%s/dumped_inputs", out_dir);
+  if (mkdir(tmp, 0700)) PFATAL("Unable to create '%s'", tmp);
+  ck_free(tmp);
 
   /* Queue directory for any starting & discovered paths. */
 
