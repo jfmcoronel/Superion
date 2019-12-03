@@ -6102,6 +6102,7 @@ retry_external_pick:
   // Pick a random other queue entry for passing to external API 
   do { tid = UR(queued_paths); } while (tid == current_entry && queued_paths > 1);
 
+  splicing_with = tid;  // ME: This is missing from original!
   target = queue;
 
   while (tid >= 100) { target = target->next_100; tid -= 100; }
