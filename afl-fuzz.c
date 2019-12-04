@@ -1291,6 +1291,7 @@ static void update_bitmap_score(struct queue_entry* q) {
    all fuzzing steps. */
 
 static void cull_queue(void) {
+  return;  // ME: Disable queue culling
 
   struct queue_entry* q;
   static u8 temp_v[MAP_SIZE >> 3];
